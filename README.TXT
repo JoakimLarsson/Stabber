@@ -9,7 +9,7 @@ contribute
 
 The STABS format is used in COFF output files too but in binary form 
 I think and not tested. In any case, my 6809 project produces S-records
-hence I have bo need to add binary debug info support.
+hence I have no need to add binary debug info support.
  
 In general STABS is nowadays replaced by the DWARF debug format and
 others but most 8 bit tools are too old to generate DWARF.  
