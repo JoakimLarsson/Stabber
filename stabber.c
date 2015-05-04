@@ -54,7 +54,6 @@ main()
 	switch (p[i])
 	{
 	  case '"': 
-	    fnlen = dq == 0 ? 0 : fnlen; // reset counter on new string
 	    *p1 = ' ';
 	    dq = dq == 0 ? 1 : 0;
 	    p1 += last != ' ' ? 1 : 0;
@@ -214,7 +213,7 @@ main()
     }
     else
       /* Just remove pagination headers and footers */
-      if (strnlen(buf, sizeof(buf)) > 1)
+      if ((strnlen(buf, sizeof(buf)) > 1) && (buf[0] != '\f'))
 	printf("%s", buf);
   }
   if (fp != NULL)
