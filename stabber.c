@@ -32,7 +32,7 @@ main()
   char *p;
   char desc[200], data[200], value[200];
   int  type, other;
-  int  dq; /* Double quote counter */
+  int  dq;   /* Double quote counter */
 
   printf("; Mixed by STABBER, decoder of debug information\n");
   while (fgets(buf, sizeof(buf), stdin) != NULL)
@@ -43,7 +43,9 @@ main()
       char last = ' ';
       int i, j;
 
-      p++; // Step past the initial string
+
+      /* This part of the parser should really be a better hack, sorry */
+      p++;
       p1 = &p[6];
       dq = 0;
 
@@ -52,8 +54,9 @@ main()
 	switch (p[i])
 	{
 	  case '"': 
-	    dq = dq == 0 ? 1 : 0;
+	    fnlen = dq == 0 ? 0 : fnlen; // reset counter on new string
 	    *p1 = ' ';
+	    dq = dq == 0 ? 1 : 0;
 	    p1 += last != ' ' ? 1 : 0;
 	    last = ' ';
 	    break;
@@ -87,11 +90,12 @@ main()
       }
       *p1 = '\0';
 
+      /* The following part is a bit better */
+
       /* .stabs formats */
       if (p[5] == 's')
       {
 	char types[200];
-
 	sscanf(&p[6], "%s %d %d %s %s", data, &type, &other, desc, value);
 	switch(type)
 	{
@@ -113,7 +117,7 @@ main()
 	  break;
 	case 0x3c:
 	  strncpy(types,"N_OPT", sizeof(types)); 
-	  printf("; The STAB information was generated because the source was %s\n", data); 
+	  printf("; %s The STAB information was generated because the source was %s\n", types, data); 
 	  break;
 	case 0x40:
 	  strncpy(types,"N_RSYM", sizeof(types)); 
@@ -140,31 +144,19 @@ main()
 	case 0x82:
 	  strncpy(types,"N_BINCL", sizeof(types)); 
 	  printf("; %s beginning of include file: %s\n", types, data); 
-#if 0
-	  if (fp != NULL)
-	  {
-	    char lbf[200];
-	    signed long line = strtol(desc, NULL , 10);
-	    rewind(fp);
-	    while (line-- > 0)
-	    { 
-	      fgets(lbf, sizeof(buf), fp);
-	    }
-	    printf("; %s", lbf);
-	  }
-#endif
 	  break;
 	default:
 	  snprintf(types, sizeof(types), "0x%x", type);
-	  printf("; Unknown S record type |%s| %s %d |%s| |%s|\n", data, types, other, desc, value);
+	  printf("; Unknown S record type %d |%s| %s %d |%s| |%s|\n", type, data, types, other, desc, value);
 	}
       }
       /* .stabn formats */
       else if (p[5] == 'n')
       {
+	int line;
 	char types[200];
 
-	sscanf(&p[6], "%d %d %d %s", &type, &other, &desc, value);
+	sscanf(&p[6], "%d %d %ld %s", &type, &other, &line, value);
 	switch(type)
 	{
 	case 0xa2:
@@ -176,7 +168,6 @@ main()
 	  if (fp != NULL)
 	  {
 	    char lbf[200];
-	    signed long line = strtol(desc, NULL , 10);
 	    rewind(fp);
 	    while (line-- > 0)
 	    { 
@@ -195,7 +186,7 @@ main()
       {
 	char types[200];
 
-	sscanf(&p[6], "%d %d %s", &type, &other, desc);
+	sscanf(&p[6], "%d %d %d %s", &type, &other, &desc, value);
 	switch(type)
 	{
 	case 0x44:
@@ -204,6 +195,7 @@ main()
 	  {
 	    char lbf[200];
 	    signed long line = strtol(desc, NULL , 10);
+
 	    rewind(fp);
 	    while (line-- > 0)
 	    { 
@@ -222,7 +214,7 @@ main()
     }
     else
       /* Just remove pagination headers and footers */
-      if (buf[0] == ' ' || buf[0] == '\t')
+      if (strnlen(buf, sizeof(buf)) > 1)
 	printf("%s", buf);
   }
   if (fp != NULL)
