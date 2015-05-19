@@ -155,7 +155,7 @@ main()
 	int line;
 	char types[200];
 
-	sscanf(&p[6], "%d %d %ld %s", &type, &other, &line, value);
+	sscanf(&p[6], "%d %d %d %s", &type, &other, &line, value);
 	switch(type)
 	{
 	case 0xa2:
@@ -177,7 +177,7 @@ main()
 	  break;
 	default:
 	  snprintf(types, sizeof(types), "0x%x", type);
-	  printf("; Unknown N record type %s %d %d %s\n", types, other, desc, value);
+	  printf("; Unknown N record type %s %d %s %s\n", types, other, desc, value);
 	}
       }
       /* .stabd formats */
@@ -185,7 +185,7 @@ main()
       {
 	char types[200];
 
-	sscanf(&p[6], "%d %d %d %s", &type, &other, &desc, value);
+	sscanf(&p[6], "%d %d %s %s", &type, &other, desc, value);
 	switch(type)
 	{
 	case 0x44:
