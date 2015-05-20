@@ -15,6 +15,7 @@ In general STABS is nowadays replaced by the DWARF debug format and
 others but most 8 bit tools are too old to generate DWARF.  
 
 Read more about STABS here: https://docs.freebsd.org/info/stabs/stabs.pdf
+Read an article about using stabber here: https://github.com/JoakimLarsson/VectrexTutorial/wiki/Stabber
  
 Compile with:
 
