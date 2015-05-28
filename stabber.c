@@ -144,6 +144,10 @@ main()
 	  strncpy(types,"N_BINCL", sizeof(types)); 
 	  printf("; %s beginning of include file: %s\n", types, data); 
 	  break;
+	case 0x84:
+	  strncpy(types,"N_SOL", sizeof(types)); 
+	  printf("; %s beginning of include file: %s\n", types, data); 
+	  break;
 	default:
 	  snprintf(types, sizeof(types), "0x%x", type);
 	  printf("; Unknown S record type %d |%s| %s %d |%s| |%s|\n", type, data, types, other, desc, value);
